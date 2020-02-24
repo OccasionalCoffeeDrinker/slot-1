@@ -1,0 +1,330 @@
+
+{"slotMasina":
+  {"spin1":{
+      "kolonaSpin1": {
+        "id00": 3,
+        "id10": 5,
+        "id20": 1
+      },
+      "kolonaSpin2": {
+        "id01": 3,
+        "id11": 5,
+        "id21": 1
+      },
+      "kolonaSpin3": {
+        "id02": 3,
+        "id12": 5,
+        "id22": 1
+      },
+      "kolonaSpin4": {
+        "id03": 3,
+        "id13": 5,
+        "id23": 1
+      },
+      "kolonaSpin5": {
+        "id04": 3,
+        "id14": 5,
+        "id24": 1
+      }
+    },
+   
+    "spin2":{
+      "kolonaSpin1": {
+        "id00": 4,
+        "id10": 1,
+        "id20": 2
+      },
+      "kolonaSpin2": {
+        "id01": 4,
+        "id11": 2,
+        "id21": 2
+      },
+      "kolonaSpin3": {
+        "id02": 4,
+        "id12": 3,
+        "id22": 2
+      },
+      "kolonaSpin4": {
+        "id03": 4,
+        "id13": 4,
+        "id23": 2
+      },
+      "kolonaSpin5": {
+        "id04": 4,
+        "id14": 5,
+        "id24": 2
+      }
+    },
+    "spin3":{
+      "kolonaSpin1": {
+        "id00": 3,
+        "id10": 2,
+        "id20": 2
+      },
+      "kolonaSpin2": {
+        "id01": 1,
+        "id11": 2,
+        "id21": 4
+      },
+      "kolonaSpin3": {
+        "id02": 2,
+        "id12": 2,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 5,
+        "id13": 2,
+        "id23": 3
+      },
+      "kolonaSpin5": {
+        "id04": 1,
+        "id14": 2,
+        "id24": 2
+      }
+    },
+    "spin4":{
+      "kolonaSpin1": {
+        "id00": 5,
+        "id10": 2,
+        "id20": 1
+      },
+      "kolonaSpin2": {
+        "id01": 5,
+        "id11": 2,
+        "id21": 3
+      },
+      "kolonaSpin3": {
+        "id02": 3,
+        "id12": 2,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 1,
+        "id13": 2,
+        "id23": 4
+      },
+      "kolonaSpin5": {
+        "id04": 3,
+        "id14": 2,
+        "id24": 1
+      }
+    },
+    "spin5":{
+      "kolonaSpin1": {
+        "id00": 4,
+        "id10": 5,
+        "id20": 1
+      },
+      "kolonaSpin2": {
+        "id01": 4,
+        "id11": 1,
+        "id21": 3
+      },
+      "kolonaSpin3": {
+        "id02": 4,
+        "id12": 2,
+        "id22": 1
+      },
+      "kolonaSpin4": {
+        "id03": 4,
+        "id13": 1,
+        "id23": 3
+      },
+      "kolonaSpin5": {
+        "id04": 4,
+        "id14": 2,
+        "id24": 1
+      }
+    },
+    "spin6":{
+      "kolonaSpin1": {
+        "id00": 2,
+        "id10": 4,
+        "id20": 5
+      },
+      "kolonaSpin2": {
+        "id01": 1,
+        "id11": 2,
+        "id21": 5
+      },
+      "kolonaSpin3": {
+        "id02": 2,
+        "id12": 4,
+        "id22": 3
+      },
+      "kolonaSpin4": {
+        "id03": 3,
+        "id13": 2,
+        "id23": 2
+      },
+      "kolonaSpin5": {
+        "id04": 2,
+        "id14": 5,
+        "id24": 2
+      }
+    },
+    "spin7":{
+      "kolonaSpin1": {
+        "id00": 1,
+        "id10": 5,
+        "id20": 3
+      },
+      "kolonaSpin2": {
+        "id01": 5,
+        "id11": 3,
+        "id21": 5
+      },
+      "kolonaSpin3": {
+        "id02": 2,
+        "id12": 5,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 5,
+        "id13": 1,
+        "id23": 5
+      },
+      "kolonaSpin5": {
+        "id04": 1,
+        "id14": 5,
+        "id24": 4
+      }
+    },
+    "spin8":{
+      "kolonaSpin1": {
+        "id00": 4,
+        "id10": 3,
+        "id20": 1
+      },
+      "kolonaSpin2": {
+        "id01": 5,
+        "id11": 1,
+        "id21": 5
+      },
+      "kolonaSpin3": {
+        "id02": 1,
+        "id12": 4,
+        "id22": 2
+      },
+      "kolonaSpin4": {
+        "id03": 3,
+        "id13": 1,
+        "id23": 2
+      },
+      "kolonaSpin5": {
+        "id04": 3,
+        "id14": 1,
+        "id24": 1
+      }
+    },
+    "spin9":{
+      "kolonaSpin1": {
+        "id00": 4,
+        "id10": 4,
+        "id20": 5
+      },
+      "kolonaSpin2": {
+        "id01": 5,
+        "id11": 4,
+        "id21": 3
+      },
+      "kolonaSpin3": {
+        "id02": 5,
+        "id12": 2,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 4,
+        "id13": 5,
+        "id23": 3
+      },
+      "kolonaSpin5": {
+        "id04": 5,
+        "id14": 2,
+        "id24": 4
+      }
+    },
+    "spin10":{
+      "kolonaSpin1": {
+        "id00": 3,
+        "id10": 1,
+        "id20": 5
+      },
+      "kolonaSpin2": {
+        "id01": 2,
+        "id11": 5,
+        "id21": 1
+      },
+      "kolonaSpin3": {
+        "id02": 5,
+        "id12": 2,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 5,
+        "id13": 5,
+        "id23": 3
+      },
+      "kolonaSpin5": {
+        "id04": 5,
+        "id14": 2,
+        "id24": 4
+
+      }
+    },
+    "spin11":{
+      "kolonaSpin1": {
+        "id00": 2,
+        "id10": 4,
+        "id20": 5
+      },
+      "kolonaSpin2": {
+        "id01": 5,
+        "id11": 1,
+        "id21": 4
+      },
+      "kolonaSpin3": {
+        "id02": 2,
+        "id12": 4,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 5,
+        "id13": 2,
+        "id23": 4
+      },
+      "kolonaSpin5": {
+        "id04": 3,
+        "id14": 4,
+        "id24": 2
+      }
+    },
+    "spin12":{
+      "kolonaSpin1": {
+        "id00": 1,
+        "id10": 3,
+        "id20": 2
+      },
+      "kolonaSpin2": {
+        "id01": 5,
+        "id11": 1,
+        "id21": 3
+      },
+      "kolonaSpin3": {
+        "id02": 1,
+        "id12": 3,
+        "id22": 4
+      },
+      "kolonaSpin4": {
+        "id03": 5,
+        "id13": 1,
+        "id23": 3
+      },
+      "kolonaSpin5": {
+        "id04": 1,
+        "id14": 3,
+        "id24": 4
+      }
+    }
+  }
+}

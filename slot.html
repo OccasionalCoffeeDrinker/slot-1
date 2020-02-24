@@ -1,0 +1,555 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slot Ver 0.1</title>
+    <link rel="stylesheet" href="default.css">
+    <script src="jquery-2.2.1.min.js"></script>
+    <script src="jquery.transit.min.js"></script>
+    <script>
+        const MAX_SPINS = 12;
+        var kredit = 0;
+        var uplataPoLiniji=0;
+        var brLinija=0;
+        var redBrSpina;
+        var dobitnaMuzika;
+        
+
+        /*event koji poziva funkciju init nakon ucitavanja cele stranice*/
+        window.addEventListener('load', init, false);
+
+        /*funkcija koja se izvrsava nakon ucitavanja cele stranice*/
+        /*Svaki put kada se ponovo ucita strana prvi spin je random izvucen iz json fajla*/
+        function init(){
+            spinFunction();
+
+            redBrSpina = Math.floor((Math.random()*MAX_SPINS)+1);
+
+            $('li:nth-child(2)>input').on('change', function() {
+                brLinija = $('input[name=brLinija]:checked').val();
+            });
+
+            $("#kreditaPoLiniji").on('change', function () {
+                uplataPoLiniji = $("#kreditaPoLiniji").val();
+            });
+
+            $("#uplati").click(function(){
+                if($("#uplataKredita").val()!=""&&$("#uplataKredita").val()>=0){
+                    kredit = $("#uplataKredita").val();
+                    $("#kredit").val(kredit);
+                    $("#zamagli").css("z-index","-1");
+                    $("#uputstvo").css("display","none");
+                }
+            });
+
+            $("#dopuni").click(function(){
+                $("#dopuniKred").attr("disabled",false);
+                var stariKredit = 0;
+                $("#dopuniBox").animate({opacity:"1"},1000,function(){
+                    $("#dopuniKred").click(function(){
+                        if($("#dopuna").val()!=""&&$("#dopuna").val()>=0){
+                            $("#dopuniKred").attr("disabled",true);
+                            stariKredit = parseInt(kredit);
+                            stariKredit = stariKredit + parseInt($("#dopuna").val());
+                            kredit=parseInt(stariKredit);
+                            $("#kredit").val(kredit);
+                            $("#dopuniBox").animate({opacity:"0"},1000);
+                        }
+                    });
+                });
+            });
+        }
+        /* Animacija koja se poziva ako imamo dobitnu kombinaciju*/
+        function dobitnaAnimacija(vockice){
+            $(vockice).transition({
+                rotate: '1080deg'
+            },2000);
+            dobitnaMuzika = playAudio("sounds/slot-win.mp3");
+            dobitnaMuzika.play();
+        }
+        /* Funkcija koja prvo ubacuje proizvoljan broj vockica za spin, a potom iz json fajla ucitava odredjenu kombinaciju
+        * od po 3 vockice za svaku kolonu*/
+        function dodajVockice(brojVockica,kolonaId){
+            var niz = procitajJSON(kolonaId);
+            for(var i = 0; i<brojVockica; i++){
+                var br = Math.floor(Math.random() * 5) + 1;
+                $("#"+kolonaId).prepend( '<div class="vocka obrisati"><img src="images/'+br+'.png"></div>' );
+            }
+            setTimeout(function () {
+                for(i = 0; i<niz.length; i++){
+                        $("#"+kolonaId).prepend( '<div class="vocka"><img src="images/'+niz[i]+'.png"></div>' );
+                }
+            },100);
+        }
+
+        //Spin funkcija proverava da li je selektovan broj linija, proverava da li smo uneli uplatu po liniji i
+        //proverava da li imamo kredita, ako su svi uslovi zadovoljeni upisuje novo stanje kredita, blokira dugme,
+        //brise odredjene vockice, dodaje nove vockice(30random+3json rezultata) i okrece. Po zavrsetku brise random
+        // dodate vockice, ponovo priprema kolonu za novi spin, fiksira rezultat na ekran, otkljucava dugme,
+        // proverava dobitak preko switch funkcije na osnovu odabranog broja linija i inkrementira redni broj spina.
+        //Ukoliko neki uslov nije ispunjen, ispisuje se odgovarajuca poruka
+        function spinFunction(){
+            $("#spin").click(function(){
+                if(brLinija!=0){
+                    if(uplataPoLiniji!=0){
+                        if(kredit-uplataPoLiniji*brLinija>=0){
+                            kredit = kredit - uplataPoLiniji*brLinija;
+                            $("#kredit").val(kredit);
+                            $("#spin").attr("disabled", true);
+                            $(".tri").removeClass("tri");
+                            $(".pocetne").remove();
+                            /*'cubic-bezier(.69,1.76,.59,.17)'*/
+                            $("#kolonaSpin1").transition({y:"0px"}, 3000,'ease');
+                            $("#kolonaSpin2").transition({y:"0px"}, 3500,'ease');
+                            $("#kolonaSpin3").transition({y:"0px"}, 4000,'ease');
+                            $("#kolonaSpin4").transition({y:"0px"}, 4500,'ease');
+                            $("#kolonaSpin5").transition({y:"0px"}, 5000,'ease');
+                            dodajVockice(30,"kolonaSpin1");
+                            dodajVockice(30,"kolonaSpin2");
+                            dodajVockice(30,"kolonaSpin3");
+                            dodajVockice(30,"kolonaSpin4");
+                            dodajVockice(30,"kolonaSpin5");
+                            setTimeout(function(){
+                                $(".obrisati").remove();
+                                $(".kolonaSpin").css("transform","translate(0px,-3700px)");
+                                $(".kolonaSpin>div").addClass("tri");
+                                $("#spin").attr("disabled", false);
+                                linijeSwitch();
+                                redBrSpina++;
+                                if(redBrSpina>MAX_SPINS)
+                                        redBrSpina=1;
+                            },5100);
+                        }else alertBox("Nemate dovoljno kredita");
+                    }else alertBox("Unesite sumu po liniji");
+                } else alertBox("Niste izabrali broj linija");
+            });
+        }
+        /*Vraca vockice za odredjenu kolonu u odredjenom rednom broju spina*/
+        
+        function procitajJSON(kolonaSpinId){
+            var json1;
+            var niz=[];
+               $.getJSON("slotMasina.json",function nesto(data){
+                json1 = data.slotMasina["spin"+redBrSpina][kolonaSpinId];
+            });            
+             setTimeout(function(){
+                var keys = Object.keys(json1);
+                keys.forEach(function(key){
+                    niz.push(json1[key]);
+                });
+            },50);
+              return niz;
+
+        }
+
+
+
+        function prvaLinija(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(1) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+        function drugaLinija(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(2) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function trecaLinija(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(3) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function vLinija(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(1) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+
+                } else console.log("netacno");
+            });
+        }
+
+        function obrnutaVLinija(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(3) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function cikCak1(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(1) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function cikCak2(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(2) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function cikCak3(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(2) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function cikCak4(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(3) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        function goreDesno(){
+            var niz = [];
+            niz.push($("#kolonaSpin1>div:nth-child(3) img")[0]);
+            niz.push($("#kolonaSpin2>div:nth-child(2) img")[0]);
+            niz.push($("#kolonaSpin3>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin4>div:nth-child(1) img")[0]);
+            niz.push($("#kolonaSpin5>div:nth-child(1) img")[0]);
+            setTimeout(function(){
+                if(proveriDobitnost(niz)==true){
+                    var kljuc;
+                    niz.forEach(function(key){
+                        dobitnaAnimacija(key);
+                        kljuc=key;
+                    });
+                    izracunajDobitak(kljuc);
+                } else console.log("netacno");
+            });
+        }
+
+        /*Ako neka vockica nije ista vraca false, iz src fajla uzima broj i poredi prvi sa svakim sledecim*/
+        function proveriDobitnost(nizVockica){
+            var pomStr = $(nizVockica[0]).attr("src");
+            var pomBr = parseInt(pomStr.match(/\d/));
+            for(var i = 0; i<nizVockica.length; i++){
+                var str = $(nizVockica[i]).attr("src");
+                var br = parseInt(str.match(/\d/));
+                if(pomBr!=br){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /*u odnosu na izabrani broj linija proverava dobitak*/
+        function linijeSwitch(){
+            
+
+
+
+
+            switch (true){
+                case (brLinija==1): prvaLinija();
+                    break;
+                case (brLinija==2): prvaLinija();
+                                    drugaLinija();
+                    break;
+                case (brLinija==3): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                    break;
+                case (brLinija==4): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                    break;
+                case (brLinija==5): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                                    obrnutaVLinija();
+                    break;
+                case (brLinija==6): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                                    obrnutaVLinija();
+                                    cikCak1();
+                    break;
+                case (brLinija==7): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                                    obrnutaVLinija();
+                                    cikCak1();
+                                    cikCak2();
+                    break;
+                case (brLinija==8): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                                    obrnutaVLinija();
+                                    cikCak1();
+                                    cikCak2();
+                                    cikCak3();
+                    break;
+                case (brLinija==9): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                                    obrnutaVLinija();
+                                    cikCak1();
+                                    cikCak2();
+                                    cikCak3();
+                                    cikCak4();
+                    break;
+                case (brLinija==10): prvaLinija();
+                                    drugaLinija();
+                                    trecaLinija();
+                                    vLinija();
+                                    obrnutaVLinija();
+                                    cikCak1();
+                                    cikCak2();
+                                    cikCak3();
+                                    cikCak4();
+                                    goreDesno();
+                    break;                
+                default: alertBox("OVO JE SWITCH " +brLinija);
+            }
+        }
+
+
+        /*uzima broj slike koji se mnozi sa uplatom po liniji*/
+        function izracunajDobitak(img){
+            var str = $(img).attr("src");
+            var brojIzStr = str.match(/\d/);
+            var mnozilac =  parseInt(brojIzStr);
+            var dobitak = mnozilac * uplataPoLiniji;
+            kredit += dobitak;
+            $("#kredit").val(kredit);
+            return dobitak;
+        }
+
+        function alertBox(string){
+            $("#alertBox").html('<h1>'+string+'</h1>');
+            $("#alertBox").animate({opacity:"1"},1500,function(){
+                $("#alertBox").animate({opacity:"0"},2500);
+            });
+        }
+
+        function playAudio(src){
+            audio = new Audio();
+            audio.src = src;
+            audio.loop = false;
+            audio.volume = 0.3;
+            return audio;
+        }
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="zamagli"></div>
+            <div id="header">
+                
+                    
+            </div>
+            <div class="menu">
+                    <section>
+                    <div class="kolona">
+                        <div id="kolonaSpin1" class="kolonaSpin">
+                            <div class="vocka pocetne"><img src="images/1.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/5.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/3.png" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="kolona">
+                        <div id="kolonaSpin2"  class="kolonaSpin">
+                            <div class="vocka pocetne"><img src="images/1.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/5.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/3.png" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="kolona">
+                        <div id="kolonaSpin3" class="kolonaSpin">
+                            <div class="vocka pocetne"><img src="images/1.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/5.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/3.png" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="kolona">
+                        <div id="kolonaSpin4" class="kolonaSpin">
+                            <div class="vocka pocetne"><img src="images/1.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/5.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/3.png" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="kolona">
+                        <div id="kolonaSpin5" class="kolonaSpin">
+                            <div class="vocka pocetne"><img src="images/1.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/5.png" alt=""></div>
+                            <div class="vocka pocetne"><img src="images/3.png" alt=""></div>
+                        </div>
+                    </div>
+            </div>
+        </section>
+        <div id="kontrole">
+            <ul>
+                    <li>
+                        <label for="kredit">Kredit:</label>
+                        <input type="number" id="kredit" size="5" disabled>
+                    </li>
+                    <li>
+                                <label for="brLinija1">Broj linija:</label>
+                                <input id="brLinija1" type="radio" name="brLinija" value="1">
+                                <input type="radio" name="brLinija" value="2">
+                                <input type="radio" name="brLinija" value="3">
+                                <input type="radio" name="brLinija" value="4">
+                                <input type="radio" name="brLinija" value="5">
+                                <input type="radio" name="brLinija" value="6">
+                                <input type="radio" name="brLinija" value="7">
+                                <input type="radio" name="brLinija" value="8">
+                                <input type="radio" name="brLinija" value="9">
+                                <input type="radio" name="brLinija" value="10">
+
+                    </li>
+                    </ul>
+                    <ul>
+                    <li>
+                        <label for="kreditaPoLiniji">Uplata po liniji:</label>
+                        <input type="number" id="kreditaPoLiniji">
+                    </li>
+                    <li>
+                        <input type="button" value="Zavrti" class="dugme" id="spin">
+                    </li>
+                    <li>
+                        <input type="button" value="Dopuni kredit" class="dugme" id="dopuni">
+                    </li>
+            </ul>
+        </div>
+        <div id="uputstvo">
+            <img src="images/uputstvo.JPG" alt="uputstvo">
+                <div>
+                    <input type="number" id="uplataKredita" min="0">
+                    <input type="button" value="Uplati" class="dugme" id="uplati">
+                </div>
+        </div>
+        <div id="alertBox"></div>
+        <div id="dopuniBox">
+            <div>
+                <label for="dopuna">Unesite zeljeni iznos:</label>
+                <input type="number" id="dopuna" min="0">
+                <input type="button" value="Dopuni" class="dugme" id="dopuniKred">
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
